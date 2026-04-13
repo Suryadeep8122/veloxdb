@@ -1,9 +1,11 @@
+
 package com.veloxdb.controller;
 
 import com.veloxdb.model.AnalysisResult;
 import com.veloxdb.model.QueryLog;
 import com.veloxdb.repository.AnalysisResultRepository;
 import com.veloxdb.repository.QueryLogRepository;
+import com.veloxdb.service.ExplainService;
 import com.veloxdb.service.RuleEngineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,9 @@ public class QueryController {
 
     @Autowired
     private RuleEngineService ruleEngineService;
+
+    @Autowired
+    private ExplainService explainService;
 
     // GET all captured queries
     @GetMapping("/queries")
@@ -66,5 +71,12 @@ public class QueryController {
     @GetMapping("/results")
     public ResponseEntity<List<AnalysisResult>> getAllResults() {
         return ResponseEntity.ok(analysisResultRepository.findAll());
+    }
+    // POST explain a real query against MySQL
+    @PostMapping("/explain")
+    public ResponseEntity<AnalysisResult> explainQuery(@RequestBody Map<String, String> request) {
+        String queryText = request.get("query");
+        AnalysisResult result = explainService.explainAndAnalyze(queryText);
+        return ResponseEntity.ok(result);
     }
 }
