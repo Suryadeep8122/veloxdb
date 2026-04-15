@@ -14,6 +14,8 @@ import java.sql.*;
 @Service
 @Slf4j
 public class ExplainService {
+    @Autowired
+    private FingerprintService fingerprintService;
 
     @Autowired
     private RuleEngineService ruleEngineService;
@@ -37,8 +39,7 @@ public class ExplainService {
         // Save query log first
         QueryLog queryLog = new QueryLog();
         queryLog.setQueryText(queryText);
-        queryLog.setFingerprint(queryText.replaceAll("\\d+", "?")
-                .replaceAll("'[^']*'", "?").toLowerCase().trim());
+        queryLog.setFingerprint(fingerprintService.generate(queryText));
 
         String scanType = "UNKNOWN";
         String indexUsed = "NULL";
